@@ -142,7 +142,7 @@ create table tblLike(
 );
 
 create table tblPost(
-	ProyectiId int not null,
+	ProyectoId int not null,
 	PostId int not null auto_increment,
 	TipoElementoId int not null,
 	ElementoId int not null
