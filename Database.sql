@@ -1,9 +1,11 @@
+drop database ProyectAdmin;
 create database ProyectAdmin;
 use ProyectAdmin;
 
 create table tblCategoriaProyecto (
-    CategoriaProyectoId int primary key not null auto_increment,
-    CategoriaProyecto varchar(50) not null
+    CategoriaProyectoId int not null auto_increment,
+    CategoriaProyecto varchar(50) not null,
+	primary key(CategoriaProyectoId)	
 );
 
 insert into tblCategoriaProyecto (CategoriaProyecto) values('Tecnologías de información');
@@ -19,8 +21,9 @@ insert into tblCategoriaProyecto (CategoriaProyecto) values('Personal');
 insert into tblCategoriaProyecto (CategoriaProyecto) values('Otros');
 
 create table tblEstados (
-    EstadoId int primary key not null auto_increment,
-    Estado varchar(50) not null
+    EstadoId int not null auto_increment,
+    Estado varchar(50) not null,
+	primary key (EstadoId)
 );
 
 insert into tblEstados (Estado)  Values('En progreso');
@@ -31,39 +34,42 @@ insert into tblEstados (Estado)  Values('Pausado');
 insert into tblEstados (Estado)  Values('Pendiente');
 
 create table tblUsuario (
-    UsuarioId int primary key not null auto_increment,
+    UsuarioId int not null auto_increment,
     Nombre varchar(50) not null,
     Apellido varchar(50) not null,
     Nickname varchar(30) null,
     Correo varchar(60) not null,
     Contrasena varchar(16) not null,
-    Sexo varchar(2) not null
+    Sexo varchar(2) not null,
+	primary key (UsuarioId)
 );
 
 create table tblProyecto (
-    ProyectoId int primary key not null auto_increment,
+    ProyectoId int not null auto_increment,
     Proyecto varchar(50) not null,
     Descripcion varchar(300) null,
     FechaCreacion timestamp,
-    FechaFinEstimada datetime
+    FechaFinEstimada datetime,
+	primary key (ProyectoId)
 );
 	
+/*drop table tblProyectoEstado;*/
 create table tblProyectoEstado (
     ProyectoId int not null,
     EstadoId int not null,
     FechaEstado datetime not null,
 	UsuarioId int not null,
-	foreign key (ProyectoId) references tblProyecto(ProyectiId),
-	foreign key (EstadoId) references tblEstado(EstadoId)
-	foreign key (UsuarioId) references tblUsuario(UsuarioId),
+	foreign key fk_PE_ProyectoId (ProyectoId) references tblProyecto(ProyectoId),
+	foreign key fk_PE_EstadoId (EstadoId) references tblEstados(EstadoId),
+	foreign key fk_PE_UsuarioId (UsuarioId) references tblUsuario(UsuarioId)
 );
 
 create table tblUsuarioProyecto (
     UsuarioId int not null,
     ProyectoId int not null,
     Rol int not null,
-	foreign key (UsuarioId) references tblUsuario(UsuarioId),
-	foreign key (ProyectoId) references tblProyecto(ProyectiId)
+	foreign key fk_UP_UsuarioId (UsuarioId) references tblUsuario(UsuarioId),
+	foreign key fk_UP_ProyectoId (ProyectoId) references tblProyecto(ProyectoId)
 );
 
 create table tblTarea (
@@ -75,20 +81,21 @@ create table tblTarea (
     ProyectoId int not null,
     UsuarioId int not null,
     UsuarioIdAsigna int not null,    
-	foreign key (ProyectoId) references tblProyecto(ProyectiId),
-	foreign key (UsuarioId) references tblUsuario(UsuarioId),
-	foreign key (UsuarioIdAsigna) references tblUsuario(UsuarioId)
+	foreign key fk_TA_ProyectoId (ProyectoId) references tblProyecto(ProyectoId),
+	foreign key fk_TA_UsuarioId (UsuarioId) references tblUsuario(UsuarioId),
+	foreign key fk_TA_UsuarioIdAsigna(UsuarioIdAsigna) references tblUsuario(UsuarioId)
 );
 
+drop table tblTareaEstado;
 create table tblTareaEstado(
 	TareaId int not null,
 	EstadoId int not null,
 	UsuarioId int not null ,
-	Fecha timestamp
-	foreign key (ProyectoId) references tblProyecto(ProyectiId),
-	foreign key (UsuarioId) references tblUsuario(UsuarioId),
-	foreign key (EstadoId) references tblEstado(EstadoId)
-)
+	Fecha timestamp	,
+	foreign key fk_TE_EstadoId (EstadoId) references tblEstados(EstadoId),
+	foreign key fk_TE_TareaId (TareaId) references tblTarea(TareaId),
+	foreign key fk_TE_UsuarioId (UsuarioId) references tblUsuario(UsuarioId)
+);
 
 create table tblNotas (
     NotaId int primary key not null,
@@ -97,8 +104,8 @@ create table tblNotas (
     FechaCracion datetime not null,
     UsuarioId int not null,
     ProyectoId int not null,
-	foreign key (ProyectoId) references tblProyecto(ProyectiId),
-	foreign key (UsuarioId) references tblUsuario(UsuarioId)
+	foreign key fk_NO_ProyectoId (ProyectoId) references tblProyecto(ProyectoId),
+	foreign key fk_NO_UsuarioId(UsuarioId) references tblUsuario(UsuarioId)
 );
 
 create table tblArchivo (
@@ -110,53 +117,69 @@ create table tblArchivo (
     UsuarioId int not null,
     Fecha datetime,
     Review varchar(100),
-	foreign key (ProyectoId) references tblProyecto(ProyectiId),
-	foreign key (UsuarioId) references tblUsuario(UsuarioId)
+	foreign key fk_AR_ProyectoId (ProyectoId) references tblProyecto(ProyectoId),
+	foreign key fk_AR_UsuarioId (UsuarioId) references tblUsuario(UsuarioId)
 );
 
+drop table tblTipoElemento;
 create table tblTipoElemento (
-    TipoComentarioId int not null primary key auto_increment,
-    TipoComentario varchar(50) not null
+    TipoElementoId int not null primary key auto_increment,
+    TipoElemento varchar(50) not null
 );
 
-insert into tblTipoElemento (TipoComentario) Values('Post');
-insert into tblTipoElemento (TipoComentario) Values('Evento');
-insert into tblTipoElemento (TipoComentario) Values('Nota');
-insert into tblTipoElemento (TipoComentario) Values('Archivo');
-insert into tblTipoElemento (TipoComentario) Values('Comentario');
+insert into tblTipoElemento (TipoElemento) Values('Post');
+insert into tblTipoElemento (TipoElemento) Values('Evento');
+insert into tblTipoElemento (TipoElemento) Values('Nota');
+insert into tblTipoElemento (TipoElemento) Values('Archivo');
+insert into tblTipoElemento (TipoElemento) Values('Comentario');
 
+drop table tblComentario;
 create table tblComentario (
-    TipoElementoId int auto_increment,
+    TipoElementoId int,
 	UsuarioId int not null,
     ElemetoId int not null,
     Fecha datetime,
-	foreign key (UsuarioId) references tblUsuario(UsuarioId)
+	foreign key fk_CO_UsuarioId (UsuarioId) references tblUsuario(UsuarioId)
 );
 
-
+drop table tblLike;
 create table tblLike(
 	UsuarioId int not null,
 	TipoElementoId int not null,
 	ElementoId int not null,
-	foreign key (UsuarioId) references tblUsuario(UsuarioId)
+	foreign key fk_LK_UsuarioId (UsuarioId) references tblUsuario(UsuarioId)
 );
 
+drop table tblPost;
 create table tblPost(
 	ProyectoId int not null,
-	PostId int not null auto_increment,
+	PostId int not null primary key auto_increment,
 	TipoElementoId int not null,
-	ElementoId int not null
-	Redaccion varchar(300)	
+	ElementoId int not null,
+	Redaccion varchar(300)	,
+	foreign key fk_PS_ProyectoId (ProyectoId) references tblProyecto(ProyectoId),
+	foreign key fk_PS_TipoElementoId (TipoElementoId) references tblTipoElemento(TipoElementoId)	
 );
 
+
 create table tblEvento(
-	EventoId int not null auto_increment,
+	EventoId int not null primary key  auto_increment,
 	Evento varchar(100) not null,
 	Descripcion varchar(600),
 	Lugar varchar (300),
 	Inicio datetime,
-	Fin datetime
+	Fin datetime,
+	ProyectoId int not null,
+	foreign key fk_EV_ProyectoId (ProyectoId) references tblProyecto(ProyectoId)
 ); 
+
+create table tblEventoUsuario(
+	EventoId int not null,
+	UsuarioId int not null,
+	Rol int not null,
+	foreign key fk_EU_EventoId (EventoId) references tblEvento(EventoId),
+	foreign key fk_EU_UsuarioId (UsuarioId) references tblUsuario(UsuarioId)
+);
 
 
 
